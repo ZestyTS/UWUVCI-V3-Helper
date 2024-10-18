@@ -15,10 +15,19 @@ namespace UWUVCI_V3_Helper.Models
             if (toolName == "wit")
             {
                 if (IsMacOS())
-                    toolName = "wit-mac";
+                    toolName += "-mac";
                 else if (IsLinux())
-                    toolName = "wit-linux";
+                    toolName += "-linux";
             }
+
+            if (toolName == "wstrt")
+            {
+                if (IsMacOS())
+                    toolName += "-mac";
+                else if (IsLinux())
+                    toolName += "-linux";
+            }
+
             ToolName = toolName;
 
             // Parse Windows-style paths to Unix-style paths

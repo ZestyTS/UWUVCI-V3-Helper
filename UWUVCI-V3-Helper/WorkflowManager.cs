@@ -79,12 +79,13 @@ namespace UWUVCI_V3_Helper
         // Execute a single step from the tools.json
         private bool ExecuteStep(ToolStep step)
         {
-            // Now run the switch statement
+            // Check if the tool has a specific suffix, if it does then it's safe
+            if (step.ToolName.Contains("-mac") || step.ToolName.Contains("-linux"))
+                return ExecuteNativeTool(step); 
+
+            // Now run the switch statement for other specific cases
             switch (step.ToolName)
             {
-                case "wit-mac":
-                case "wit-linux":
-                    return ExecuteNativeTool(step); // Execute wit as a native tool
                 case "nfs2iso2nfs":
                     return RunNfs2Iso2NfsTool(step);
                 default:

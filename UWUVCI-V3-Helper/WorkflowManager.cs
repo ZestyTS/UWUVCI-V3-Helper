@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
 using UWUVCI_V3_Helper.Tools;
 using UWUVCI_V3_Helper.Models;
+using UWUVCI_V3_Helper.Helpers;
 
 namespace UWUVCI_V3_Helper
 {
@@ -118,19 +119,83 @@ namespace UWUVCI_V3_Helper
         {
             try
             {
-                _logger.LogInformation($"Running native tool: {step.ToolName} with arguments: {step.Arguments}");
+                _logger.LogInformation($"Attempting to run tool: {step.ToolName} with arguments: {step.Arguments}");
 
-                using Process toolProcess = new();
+                bool success = RunTool(step, false); // Try native execution first
+
+                if (!success){
+                    EnsureExecutable(step.ToolName);
+
+                    if (PathHelper.IsAppleSilicon()){
+                        _logger.LogWarning($"Native execution failed on Apple Silicon. Attempting x86_64 mode via Rosetta.");
+
+                        // Modify ToolName to include x86_64 execution
+                        step.ToolName = "arch -x86_64 " + step.ToolName;
+                        success = RunTool(step, true);
+                    } 
+                    else
+                        success = RunTool(step, false);
+                }
+
+                return success;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error running tool {step.ToolName}: {ex.Message}");
+                return false;
+            }
+        }
+
+        private bool RunTool(ToolStep step, bool isFallback)
+        {
+            string baseDirectory = AppContext.BaseDirectory;
+
+            using Process toolProcess = new();
+
+            if (!isFallback)
+            {   
                 toolProcess.StartInfo.FileName = step.ToolName;
                 toolProcess.StartInfo.Arguments = step.Arguments;
-                toolProcess.StartInfo.WorkingDirectory = step.CurrentDirectory;
-                toolProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            } 
+            else 
+            {
+                toolProcess.StartInfo.FileName = "/usr/bin/arch";
+                toolProcess.StartInfo.Arguments = $"-x86_64 {Path.Combine(baseDirectory, step.ToolName)} {step.Arguments}";
+            }
+
+            toolProcess.StartInfo.WorkingDirectory = step.CurrentDirectory;
+            toolProcess.StartInfo.RedirectStandardOutput = true;
+            toolProcess.StartInfo.RedirectStandardError = true;
+            toolProcess.StartInfo.UseShellExecute = false;
+            toolProcess.StartInfo.CreateNoWindow = true;
+
+            try
+            {
                 toolProcess.Start();
-                toolProcess.WaitForExit();
+
+                // Timeout logic
+                bool exited = toolProcess.WaitForExit(5000); // 5 seconds timeout
+
+                if (!exited)
+                {
+                    toolProcess.Kill(); // Kill the process if it exceeds the timeout
+                    _logger.LogError($"Tool {step.ToolName} timed out and was terminated.");
+                    return false;
+                }
+
+                // Capture output and error
+                string output = toolProcess.StandardOutput.ReadToEnd();
+                string error = toolProcess.StandardError.ReadToEnd();
+
+                if (!string.IsNullOrWhiteSpace(output))
+                    _logger.LogInformation($"Output ({(isFallback ? "x86_64 mode" : "native")}): {output}");
+
+                if (!string.IsNullOrWhiteSpace(error))
+                    _logger.LogWarning($"Error ({(isFallback ? "x86_64 mode" : "native")}): {error}");
 
                 if (toolProcess.ExitCode != 0)
                 {
-                    _logger.LogError($"Native tool {step.ToolName} failed with exit code {toolProcess.ExitCode}");
+                    _logger.LogError($"Tool {step.ToolName} failed with exit code {toolProcess.ExitCode}.");
                     return false;
                 }
 
@@ -138,8 +203,16 @@ namespace UWUVCI_V3_Helper
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error running native tool {step.ToolName}: {ex.Message}");
+                _logger.LogError($"Error running tool {step.ToolName}: {ex.Message}");
                 return false;
+            }
+            finally
+            {
+                // Ensure process resources are cleaned up
+                if (!toolProcess.HasExited)
+                    toolProcess.Kill();
+
+                toolProcess.Dispose();
             }
         }
 

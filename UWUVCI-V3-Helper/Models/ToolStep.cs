@@ -14,7 +14,10 @@ namespace UWUVCI_V3_Helper.Models
         {
             // Ensure the tool name is correct for macOS/Linux
             if (toolName == "wit" || toolName == "wstrt")
-                toolName += IsMacOS() ? "-mac" : "-linux";
+                if (IsMacOS())
+                    toolName += "-mac";
+                else if (IsLinux())
+                    toolName += "-linux";
 
             ToolName = toolName;
 

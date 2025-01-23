@@ -7,6 +7,12 @@ namespace UWUVCI_V3_Helper.Helpers
     {
         private static bool IsLinux = RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
         private static bool IsMacOS = RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
+
+        public static bool IsAppleSilicon() 
+        {
+            return IsMacOS && RuntimeInformation.OSArchitecture == Architecture.Arm64;
+        }
+
         public static string ConvertWindowsPathToUnix(string windowsPath)
         {
             if (string.IsNullOrEmpty(windowsPath))

@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
+using UWUVCI_V3_Helper.Helpers;
+using System.Diagnostics;
 
 namespace UWUVCI_V3_Helper
 {
@@ -61,6 +63,23 @@ namespace UWUVCI_V3_Helper
             // Set up workflow manager
             WorkflowManager workflowManager = new(logger);
 
+            if (PathHelper.IsAppleSilicon())
+            {
+                Console.WriteLine("Apple Silicon detected.");
+                if (!IsRosettaInstalled())
+                {
+                    Console.WriteLine("Rosetta 2 may be required to run some tools in x86_64 mode");
+                    Console.WriteLine("Attempting to install Rosetta 2");
+                    
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = "/usr/sbin/softwareupdate",
+                        Arguments = "--install-rosetta --agree-to-license",
+                        UseShellExecute = true
+                    })?.WaitForExit();
+                }
+            }
+
             // Execute the workflow based on tools.json
             if (workflowManager.ExecuteWorkflow(toolsJsonPath))
             {
@@ -73,6 +92,35 @@ namespace UWUVCI_V3_Helper
             }
             else
                 Console.WriteLine("Error: Workflow execution failed.");
+        }
+
+        private static bool IsRosettaInstalled()
+        {
+            try
+            {
+                using var process = new Process
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = "/usr/bin/arch",
+                        Arguments = "-x86_64 echo test",
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                        UseShellExecute = false,
+                        CreateNoWindow = true
+                    }
+                };
+
+                process.Start();
+                process.WaitForExit();
+
+                // Check if it exited successfully
+                return process.ExitCode == 0;
+            }
+            catch
+            {
+                return false; // Assume not installed if any exception occurs
+            }
         }
     }
 }

@@ -122,7 +122,7 @@ namespace UWUVCI_V3_Helper
                 _logger.LogInformation($"Attempting to run tool: {step.ToolName} with arguments: {step.Arguments}");
 
                 bool success = RunTool(step, false); // Try native execution first
-
+                /*
                 if (!success){
                     EnsureExecutable(step.ToolName);
 
@@ -136,7 +136,7 @@ namespace UWUVCI_V3_Helper
                     else
                         success = RunTool(step, false);
                 }
-
+                */
                 return success;
             }
             catch (Exception ex)

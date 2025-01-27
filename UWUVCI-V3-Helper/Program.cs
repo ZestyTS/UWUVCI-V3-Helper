@@ -63,6 +63,7 @@ namespace UWUVCI_V3_Helper
             // Set up workflow manager
             WorkflowManager workflowManager = new(logger);
 
+            /*
             if (PathHelper.IsAppleSilicon())
             {
                 Console.WriteLine("Apple Silicon detected.");
@@ -79,6 +80,7 @@ namespace UWUVCI_V3_Helper
                     })?.WaitForExit();
                 }
             }
+            */
 
             // Execute the workflow based on tools.json
             if (workflowManager.ExecuteWorkflow(toolsJsonPath))

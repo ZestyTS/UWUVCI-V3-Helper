@@ -11,10 +11,12 @@ namespace UWUVCI_V3_Helper
         static void Main(string[] args)
         {
             Console.Title = "UWUVCI MAC/LINUX HELPER";
-            Console.WriteLine("*****************************************");
-            Console.WriteLine("* UWUVCI V3 MAC/LINUX HELPER            *");
-            Console.WriteLine("* Made By ZestyTS                       *");
-            Console.WriteLine("*****************************************");
+            Console.WriteLine("*******************************************");
+            Console.WriteLine("*******************************************");
+            Console.WriteLine("** UWUVCI V3 MAC/LINUX HELPER            **");
+            Console.WriteLine("** Made By ZestyTS                       **");
+            Console.WriteLine("*******************************************");
+            Console.WriteLine("*******************************************");
             Console.WriteLine();
 
             // Set up configuration to read from appsettings.json
@@ -85,12 +87,14 @@ namespace UWUVCI_V3_Helper
             // Execute the workflow based on tools.json
             if (workflowManager.ExecuteWorkflow(toolsJsonPath))
             {
-                Console.WriteLine("*****************************************");
-                Console.WriteLine("* All steps completed!                  *");
-                Console.WriteLine("* Please return to UWUVCI and           *");
-                Console.WriteLine("* click the 'OK' button                 *");
-                Console.WriteLine("* to continue the process.              *");
-                Console.WriteLine("*****************************************");
+                Console.WriteLine("*******************************************");
+                Console.WriteLine("*******************************************");
+                Console.WriteLine("** All steps completed!                  **");
+                Console.WriteLine("** Please return to UWUVCI and           **");
+                Console.WriteLine("** click the 'OK' button                 **");
+                Console.WriteLine("** to continue the process.              **");
+                Console.WriteLine("*******************************************");
+                Console.WriteLine("*******************************************");
             }
             else
                 Console.WriteLine("Error: Workflow execution failed.");

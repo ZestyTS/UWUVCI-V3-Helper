@@ -97,7 +97,11 @@ namespace UWUVCI_V3_Helper
                 Console.WriteLine("*******************************************");
             }
             else
+            {
                 Console.WriteLine("Error: Workflow execution failed.");
+                Console.WriteLine("For assistance, please checkout the FAQ in the ReadMe.txt file.");
+            }
+                
         }
 
         private static bool IsRosettaInstalled()

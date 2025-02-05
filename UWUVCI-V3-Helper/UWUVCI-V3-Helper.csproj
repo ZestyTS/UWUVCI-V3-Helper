@@ -37,6 +37,9 @@
     <None Update="nfs2iso2nfs.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="ReadMe.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="wit-linux">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

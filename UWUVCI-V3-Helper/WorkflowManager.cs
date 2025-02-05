@@ -32,25 +32,36 @@ namespace UWUVCI_V3_Helper
                     return false;
                 }
 
-                // Ensure none of the steps are null
-                foreach (var step in workflowSteps)
+                // Process each step
+                for (int i = 0; i < workflowSteps.Count;)
                 {
+                    var step = workflowSteps[i];
+
                     if (step == null)
                     {
                         _logger.LogError("Encountered a null step in workflowSteps.");
+                        workflowSteps.RemoveAt(i);
+                        UpdateJsonFile(jsonFilePath, workflowSteps);
                         continue;
                     }
 
                     _logger.LogInformation($"Executing step: {step.ToolName}");
 
-                    if (!ExecuteStep(step))
+                    if (ExecuteStep(step))
+                    {
+                        // Step executed successfully, remove it from the list
+                        _logger.LogInformation($"Step {step.ToolName} completed successfully. Removing from JSON.");
+                        workflowSteps.RemoveAt(i);
+                        UpdateJsonFile(jsonFilePath, workflowSteps);
+                    }
+                    else
                     {
                         _logger.LogError($"Step {step.ToolName} failed.");
-                        return false;
+                        return false; // Stop execution on failure
                     }
                 }
 
-                // After processing, delete the file
+                // If all steps are completed, delete the file
                 DeleteToolJson(jsonFilePath);
 
                 return true;
@@ -59,6 +70,18 @@ namespace UWUVCI_V3_Helper
             {
                 _logger.LogError($"Error executing workflow: {ex.Message}");
                 return false;
+            }
+        }
+        private void UpdateJsonFile(string jsonFilePath, List<ToolStep> remainingSteps)
+        {
+            try
+            {
+                string updatedJson = JsonConvert.SerializeObject(remainingSteps, Formatting.Indented);
+                File.WriteAllText(jsonFilePath, updatedJson);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error updating JSON file: {ex.Message}");
             }
         }
         private void DeleteToolJson(string jsonFilePath)
@@ -171,17 +194,16 @@ namespace UWUVCI_V3_Helper
 
             try
             {
-                toolProcess.Start();
+                var started = toolProcess.Start();
 
-                // Timeout logic
-                bool exited = toolProcess.WaitForExit(5000); // 5 seconds timeout
-
-                if (!exited)
+                if (!started)
                 {
-                    toolProcess.Kill(); // Kill the process if it exceeds the timeout
-                    _logger.LogError($"Tool {step.ToolName} timed out and was terminated.");
+                    _logger.LogError($"Failed to start process: {step.ToolName}");
                     return false;
                 }
+
+                while (!toolProcess.HasExited)
+                    Thread.Sleep(500);
 
                 // Capture output and error
                 string output = toolProcess.StandardOutput.ReadToEnd();

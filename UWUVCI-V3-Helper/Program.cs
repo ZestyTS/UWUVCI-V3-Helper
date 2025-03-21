@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
-using UWUVCI_V3_Helper.Helpers;
 using System.Diagnostics;
 
 namespace UWUVCI_V3_Helper
@@ -21,7 +20,7 @@ namespace UWUVCI_V3_Helper
 
             // Set up configuration to read from appsettings.json
             IConfiguration config = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
+                .SetBasePath(AppContext.BaseDirectory)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .Build();
 
@@ -35,7 +34,8 @@ namespace UWUVCI_V3_Helper
             }
 
             // Get current directory (where the helper is running)
-            string currentDirectory = Directory.GetCurrentDirectory();
+            string currentDirectory = AppContext.BaseDirectory;
+
 
             // Move up one level to find tools.json in the UWUVCI root folder
             string toolsJsonPath = Path.Combine(currentDirectory, "..", toolsJsonFileName);

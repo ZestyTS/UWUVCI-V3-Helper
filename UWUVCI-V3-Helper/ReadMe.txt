@@ -5,7 +5,7 @@ The purpose of this app is to help unix users get past the hurdles that some too
 While using the app, please read the console to see what it's doing, it clues you in on everything, so you shouldn't be confused as to what's going on.
 
 I recommend you check out the guide video to have an idea of how this software works:
-https://www.youtube.com/watch?v=aIXhjbinZc4&list=PLbQMtrmXFIxQ1hpvu9m1th41vsaqnZ2Id&index=8
+https://www.youtube.com/watch?v=MN196Z_Hl3M&list=PLbQMtrmXFIxQ1hpvu9m1th41vsaqnZ2Id&index=8
 
 Note: There is not a discord server for this app, or anything, I am the only person who knows how this works, please keep that in mind.
 

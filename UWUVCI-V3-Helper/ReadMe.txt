@@ -60,7 +60,7 @@ If you have any questions, check out the FAQ below.
 			[{"ToolName":"wit","Arguments":"copy --source \"C:\\home\\zestyts\\kms\\SF8E01.wbfs\" --dest \"Z:\\home\\zestyts\\kms\\UWUVCI V3\\bin\\temp\\pre.iso\" -I","CurrentDirectory":"Z:\\home\\zestyts\\kms\\UWUVCI V3\\","Function":"Wii"}]
 		Obviously for Mac, you would change it the other way.
 		Note: You could actually just write in the full correct path without the Windows paths so you could change it to be
-			[{"ToolName":"wit","Arguments":"copy --source \"/users/zestyts/kms/SF8E01.wbfs\" --dest \"/home/zestyts/kms/UWUVCI V3/bin/temp\\pre.iso\" -I","CurrentDirectory":"/home/zestyts/kms/UWUVCI V3/","Function":"Wii"}]
+			[{"ToolName":"wit","Arguments":"copy --source \"/users/zestyts/kms/SF8E01.wbfs\" --dest \"/home/zestyts/kms/UWUVCI V3/bin/temp/pre.iso\" -I","CurrentDirectory":"/home/zestyts/kms/UWUVCI V3/","Function":"Wii"}]
 		The helper app tries to fix the paths on your behalf so doing all of that extra work might not really be necessary.
 
 7) I have a question that isn't answered here
